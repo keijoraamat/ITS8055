@@ -14,7 +14,8 @@ def uniform_random_walk(n) -> list:
       A list representing the positions of the random walk.
   """
   steps = np.random.choice([-1, 1], size=n)
-  return np.cumsum(steps)
+  #print(steps)
+  return steps
 
 
 def gaussian_random_walk(n) -> list:
@@ -28,7 +29,8 @@ def gaussian_random_walk(n) -> list:
       A list representing the positions of the random walk.
   """
   steps = np.random.normal(loc=0.0, scale=1.0, size=n)
-  return np.cumsum(steps)
+  print(steps)
+  return steps
 
 
 
@@ -90,7 +92,7 @@ def analyze_random_walks(random_walk) -> dict:
      }
 
 
-walk_length = 1000
+walk_length = 100
 num_walks = 10
 
 walks = go_walking(num_walks, walk_length)
@@ -98,8 +100,25 @@ gaussian_results = analyze_random_walks(walks['gaussian walks'])
 uniform_results = analyze_random_walks(walks['uniform walks'])
 
 
-print(gaussian_results['time average'])
-print(uniform_results['time average'])
+#print(gaussian_results['time average'])
+#print(uniform_results['ensemble average'])
 
-plt.plot(gaussian_results['ensemble average'])
+# Plot both ensemble averages
+plt.hist(gaussian_results['ensemble average'], label='Gaussian')
+plt.hist(uniform_results['ensemble average'], label='Uniform')
+
+# Add a legend
+plt.legend()
+# Create figure and axes
+fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
+
+# Plot histograms
+axs[0].hist(gaussian_results['ensemble average'], bins=70)
+axs[1].hist(uniform_results['ensemble average'], bins=70)
+
+# Set titles
+axs[0].set_title('Gaussian')
+axs[1].set_title('Uniform')
+
+
 plt.show()
