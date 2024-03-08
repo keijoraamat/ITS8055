@@ -36,8 +36,8 @@ plt.legend()
 plt.xlabel('Values')
 plt.ylabel('Frequency')
 plt.grid(True)
-plt.show()
-
+#plt.show()
+plt.savefig("plot2.png")
 # def logistic_map(x, lam):
 #     return lam * x * (1 - x)
 
