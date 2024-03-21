@@ -9,3 +9,18 @@
 - [ ] Choose two stations next to each other, and one further away to see if their location has an influence.
 - [ ] Plot the three statistical parameters mean, median and standard deviation as a function of the sample percentage for each site.
 - [ ] Next, plot the same three statistical parameters, but as ensembles (e.g. the mean of two stations and then all three stations for each time step).
+
+### how to create venv and install required components
+
+Activate everytime, create and install depencies once.
+
+```bash
+# Create Virtual Environment
+python3 -m venv venv
+
+# Activate Virtual Environment
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
