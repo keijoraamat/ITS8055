@@ -13,18 +13,24 @@ COLUMN_NAME = 'dt_sound_level_dB'
 lags = [1, 10, 60, 720]
 colors = ['b', 'g', 'r', 'c']
 
-def plot_4_in_1(all_data, COLUMN_NAME, lags):
+def plot_4_in_1(all_data, lags):
+    data = all_data[1][1][COLUMN_NAME]
+    sensor_name = all_data[1][0]
     _, axs = plt.subplots(2, 2, figsize=(15, 15))
 
     for ax, lag in zip(axs.flat, lags):
-        lag_plot(all_data[5][1][COLUMN_NAME], lag=lag, ax=ax)
-        ax.set_title(f'Lag plot for {COLUMN_NAME} with lag={lag}')
+        y_true = data.iloc[lag:]
+        y_pred = data.iloc[:-lag]
+        r2 = r2_score(y_true, y_pred)
+        lag_plot(data, lag=lag, ax=ax)
+        ax.set_title(f'Lag plot for {COLUMN_NAME} with lag={lag} R2={r2:.2f}')
 
     plt.tight_layout()
-    plt.savefig(f'{all_data[5][0]}_lag_plots.png')
+    plt.savefig(f'{sensor_name}_lag_plots.png')
 
 
-def plot_overlayed(all_data, COLUMN_NAME, lags):
+def plot_overlayed(all_data, lags):
+    sensor_number = all_data[2][0]
     data = all_data[2][1][COLUMN_NAME]
     _, ax = plt.subplots(figsize=(13, 13))
     for lag, color in zip(lags, colors):
@@ -34,10 +40,10 @@ def plot_overlayed(all_data, COLUMN_NAME, lags):
         lag_plot(data, lag=lag, ax=ax, c=color, label=f'lag={lag}, R2={r2:.2f}')
 
     plt.legend()
-    plt.title(f'Sensor nr: {all_data[2][0]}')
+    plt.title(f'Sensor nr: {sensor_number}')
 
     plt.tight_layout()
-    plt.savefig(f'{all_data[2][0]}_lag_overlayed.png')
+    plt.savefig(f'{sensor_number}_lag_overlayed.png')
 
-plot_4_in_1(all_data, COLUMN_NAME, lags)
-plot_overlayed(all_data, COLUMN_NAME, lags)
+plot_4_in_1(all_data, lags)
+plot_overlayed(all_data, lags)
