@@ -4,7 +4,7 @@
 - [x] Convert the time series to equally-spaced data wit one minute intervalls
 - [x] Impute missing data for each time series using the "nearest" interpolant
 - [x] For each station, create lag plots with lags of 1, 10, 60 and 720 minutes. Overlay the four lags on each plot, and calculate the coefficient of determination, R^2.
-- [ ] Compare the R^2 values for each of the lag plots and comment on when they switch from deterministic to non-deterministic.
+- [x] Compare the R^2 values for each of the lag plots and comment on when they switch from deterministic to non-deterministic.
 - [ ] Randomly resample the data from three stations using a uniform distribution with sample sizes of 1%, 5%, 10%, 50% and 90%. 
 - [ ] Choose two stations next to each other, and one further away to see if their location has an influence.
 - [ ] Plot the three statistical parameters mean, median and standard deviation as a function of the sample percentage for each site.
