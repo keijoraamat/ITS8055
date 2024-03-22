@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 def uniform_random_walk(n) -> list:
   """
@@ -13,7 +14,7 @@ def uniform_random_walk(n) -> list:
       A list representing the positions of the random walk.
   """
   steps = np.random.choice([-1, 1], size=n)
-  #print(steps)
+  print(steps)
   return steps
 
 
@@ -55,6 +56,10 @@ def logistic_map(n, lmd):
         x = lmd * x * (1 - x)
         results.append(x)
     return results
+
+
+def generate_rgb_list(length):
+    return [(random.random(), random.random(), random.random()) for _ in range(length)]
 
 
 def go_walking(num_walks, walk_length) -> dict:
@@ -115,20 +120,29 @@ def analyze_random_walks(random_walk) -> dict:
      }
 
 
-walk_length = 1000
+walk_length = 100
 num_walks = 10
 lambdas = [0.5, 2.5, 3.5, 4]
 x0 = 2 # Initial value of x
 
-for lmbda in lambdas: 
-    for i in num_walks:
-        results = logistic_map(walk_length, lmbda)
+# for lmbda in lambdas: 
+#     for i in num_walks:
+#         results = logistic_map(walk_length, lmbda)
 
 
 walks = go_walking(num_walks, walk_length)
 gaussian_results = analyze_random_walks(walks['gaussian walks'])
 uniform_results = analyze_random_walks(walks['uniform walks'])
 
+colors = generate_rgb_list(num_walks)
+for i, list in enumerate(walks['gaussian walks']):
+    plt.plot(list, color=colors[i], label=f'Gaussian walk {i}')
+plt.savefig("gaussian_walks.png")
+
+for i, list in enumerate(walks['uniform walks']):
+    plt.plot(list, color=colors[i], label=f'Uniform walk {i}')
+
+plt.savefig("random_walks.png")
 
 #print(gaussian_results['time average'])
 #print(uniform_results['ensemble average'])
