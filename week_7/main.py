@@ -12,6 +12,7 @@ COLUMN_NAME = 'dt_sound_level_dB'
 lags = [1, 10, 60, 720]
 colors = ['b', 'r', 'g', 'c']
 alphas = [1, 0.7, 0.4, 0.08]
+sample_sizes = [0.01, 0.05, 0.1, 0.5, 0.9]
 
 def plot_4_in_1(all_data, i, name='lag_plots'):
     data = all_data[i][1][COLUMN_NAME]
@@ -56,21 +57,69 @@ def plot_all_4_in_1():
         plot_4_in_1(all_data, i)
 
 
+def get_mean(data: list[pd.DataFrame]) -> list[pd.DataFrame]:
+    result = []
+    for d in data:
+        result.append(d.mean())
+    return result
+
+
+def get_median(data: list[pd.DataFrame]) -> list[pd.DataFrame]:
+    result = []
+    for d in data:
+        result.append(d.median())
+    return result
+
+
+def get_st_deviation(data: list[pd.DataFrame]) -> list[pd.DataFrame]:
+    result = []
+    for d in data:
+        result.append(d.std())
+    return result
+
+
+def plot_stat_params(data) -> None:
+    # mean = get_mean(data)
+    # median = get_median(data)
+    # st_deviation = get_st_deviation(data)
+
+    devs = ""
+    _, axs = plt.subplots(3, 1, figsize=(15, 15))
+    for i, (device, parameters) in enumerate(data.items()):
+        axs[0].plot(sample_sizes, parameters['mean'], label=device)
+        axs[1].plot(sample_sizes, parameters['median'], label=device)
+        axs[2].plot(sample_sizes, parameters['std_dev'], label=device)
+        devs += f"_{device} "
+
+    # Set titles for subplots
+    axs[0].set_title('Mean')
+    axs[1].set_title('Median')
+    axs[2].set_title('Standard Deviation')
+
+    for ax in axs:
+        # Set x-label for subplots
+        ax.set_xlabel('Sample Size')
+        # Add legends
+        ax.legend()
+        
+
+    plt.tight_layout()
+    plt.savefig(f'stat_params_of{devs}.png')
+ 
+
 # To see which sensor is which
 # for i in range(len(all_data)):
 #     print(f"Sensor nr {all_data[i][0]} is n:{i}")
 
 concrete_3 = [all_data[9], all_data[3], all_data[10]]
 
-randed_data = []
+randed_data = {}
 for data in concrete_3:
     r = Randomiser().randomise(data[1])
-    randed_data.append((data[0], r))
+    randed_data[data[0]] = r
 
-print(type(randed_data[0][0]))
-print((randed_data[0][1][0]))
-print(type(all_data[0][0]))
-#plot_overlayed(randed_data, 0, 'lag_overlayed_randomised')
+for rand in randed_data:
+    plot_stat_params(rand[1], rand[0])
 
 plot_all_overlayed_plots = False
 plot_all_4_in_1s_plots = False
