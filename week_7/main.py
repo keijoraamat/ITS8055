@@ -1,5 +1,6 @@
 from repo.Repository import Repository as Repo
 from randomiser import Randomiser
+from statistiker import Statistiker
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,38 +58,14 @@ def plot_all_4_in_1():
         plot_4_in_1(all_data, i)
 
 
-def get_mean(data: list[pd.DataFrame]) -> list[pd.DataFrame]:
-    result = []
-    for d in data:
-        result.append(d.mean())
-    return result
-
-
-def get_median(data: list[pd.DataFrame]) -> list[pd.DataFrame]:
-    result = []
-    for d in data:
-        result.append(d.median())
-    return result
-
-
-def get_st_deviation(data: list[pd.DataFrame]) -> list[pd.DataFrame]:
-    result = []
-    for d in data:
-        result.append(d.std())
-    return result
-
-
 def plot_stat_params(data) -> None:
-    # mean = get_mean(data)
-    # median = get_median(data)
-    # st_deviation = get_st_deviation(data)
 
     devs = ""
-    _, axs = plt.subplots(3, 1, figsize=(15, 15))
+    _, axs = plt.subplots(3, 1, figsize=(7, 20))
     for i, (device, parameters) in enumerate(data.items()):
         axs[0].plot(sample_sizes, parameters['mean'], label=device)
         axs[1].plot(sample_sizes, parameters['median'], label=device)
-        axs[2].plot(sample_sizes, parameters['std_dev'], label=device)
+        axs[2].plot(sample_sizes, parameters['standard deviation'], label=device)
         devs += f"_{device} "
 
     # Set titles for subplots
@@ -98,9 +75,10 @@ def plot_stat_params(data) -> None:
 
     for ax in axs:
         # Set x-label for subplots
-        ax.set_xlabel('Sample Size')
+        ax.set_xlabel('Sample Size %')
         # Add legends
         ax.legend()
+        ax.grid()
         
 
     plt.tight_layout()
@@ -113,13 +91,18 @@ def plot_stat_params(data) -> None:
 
 concrete_3 = [all_data[9], all_data[3], all_data[10]]
 
+#randed_data - dict{sensor_nr: [randomly sampled DataFrames]}}
 randed_data = {}
 for data in concrete_3:
     r = Randomiser().randomise(data[1])
     randed_data[data[0]] = r
 
-for rand in randed_data:
-    plot_stat_params(rand[1], rand[0])
+stats_for_randed_data = {}
+
+for key, value in randed_data.items():
+    stats_for_randed_data[key] = Statistiker().get_stat_params(value)
+
+plot_stat_params(stats_for_randed_data)
 
 plot_all_overlayed_plots = False
 plot_all_4_in_1s_plots = False
