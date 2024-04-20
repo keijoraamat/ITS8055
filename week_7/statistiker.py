@@ -52,3 +52,31 @@ class Statistiker:
             st_deviation.append(self.__get_st_deviation(d))
 
         return {'mean': mean, 'median': median, 'standard deviation': st_deviation}
+    
+
+    def combine_and_get_stats(self, data: tuple[str, pd.DataFrame]) -> dict:
+        '''
+        Combines the data and returns the mean, median, and standard deviation of the combined data.
+        ---
+        Input:
+        data: tuple[str, pd.DataFrame] -> Tuple with sensor name and its dataframe.
+        ---
+        Output:
+        {
+            'mean': 10.6, 
+            'median': 10.6, 
+            'std_dev': 1.6
+        }
+        '''
+        names = ""
+        dfs =[]
+        for t in data:
+            dfs.append(t[1])
+            names += f"_{t[0]} "
+        combined_data = pd.concat(dfs)
+        mean = combined_data.mean()[self.COLUMN_NAME]
+        median = combined_data.median()[self.COLUMN_NAME]
+        st_deviation = combined_data.std()[self.COLUMN_NAME]
+
+        return {names:{'mean': mean, 'median': median, 'standard deviation': st_deviation}}
+    

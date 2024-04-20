@@ -9,8 +9,11 @@
 - [x] Choose two stations next to each other, and one further away to see if their location has an influence.
 - [x] Plot the three statistical parameters mean, median and standard deviation as a function of the sample percentage for each site.
 - [ ] Next, plot the same three statistical parameters, but as ensembles (e.g. the mean of two stations and then all three stations for each time step).
+    * [ ] Calculate the statistical params from combined data from two stations.
+    * [ ] Plot the params.
+    * [ ] Repeat for all stations. Thistime combine the data from all three stations at each time step.
 
-### how to create venv and install required components
+## how to create venv and install required components
 
 Activate everytime, create and install depencies once.
 
