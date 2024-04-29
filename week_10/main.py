@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from repo.Repository import Repository as Repo
@@ -40,13 +41,101 @@ def evaluate_rmse(sensor_data, assimilated_data, gains):
     rmse_values = {}
     for gain in gains:
         for sensor_name, sensor_df in sensor_data:
-            merged_df = pd.merge(sensor_df, assimilated_data, on='Time', suffixes=('_sensor', '_assimilated'))
+            assimilated_df = next(df for name, df in assimilated_data[gain] if name == sensor_name)
+            # Reset the index of both DataFrames
+            merged_df = sensor_df.merge(assimilated_df, left_index=True, right_index=True, suffixes=('_sensor', '_assimilated'))
             y_hat = gain * merged_df['dt_sound_level_dB_sensor'] + (1 - gain) * merged_df['dt_sound_level_dB_assimilated'] 
 
             rmse = calculate_rmse(merged_df['dt_sound_level_dB_assimilated'], y_hat)
             rmse_values[(sensor_name, gain)] = rmse
     return rmse_values
-print(model[1].tail())
+
+def calculate_rmse_without_assimilation(sensor_data, model):
+    rmse_values = {}
+    for sensor_name, sensor_df in sensor_data:
+        model_predictions = model[1]['dt_sound_level_dB']
+        rmse = calculate_rmse(sensor_df['dt_sound_level_dB'], model_predictions)
+        rmse_values[sensor_name] = rmse
+    return rmse_values
+
+def plot_rmse(rmse_values_with_assimilation, rmse_values_without_assimilation):
+    sensors = rmse_values_with_assimilation.keys()
+    gains = [0.1, 0.25, 0.5, 0.75]
+
+    for sensor in sensors:
+        print(f"Sensor: {sensor}")
+        plt.figure(figsize=(10, 6))
+
+        # Plot RMSE with assimilation for each gain
+        for gain in gains:
+            print(f"Sensor: {sensor[0]}, gain: {gain}")
+            rmse_with_assimilation = rmse_values_with_assimilation[(sensor[0], gain)]
+            plt.bar(f'With Assimilation (K={gain})', rmse_with_assimilation)
+
+        # Plot RMSE without assimilation
+        print(rmse_values_without_assimilation.keys())
+        rmse_without_assimilation = rmse_values_without_assimilation[sensor[0]]
+        plt.bar('Without Assimilation', rmse_without_assimilation)
+
+        plt.ylabel('RMSE')
+        plt.title(f'RMSE for Sensor {sensor[0]}')
+        plt.savefig(f'rmse_{sensor[0]}.png')
+
+def plot_rmse_line(rmse_values_with_assimilation, rmse_values_without_assimilation):
+    sensors = rmse_values_with_assimilation.keys()
+    gains = [0.1, 0.25, 0.5, 0.75]
+
+    plt.figure(figsize=(10, 6))
+
+    # Plot RMSE with assimilation for each sensor and gain
+    for sensor in sensors:
+        rmse_with_assimilation = [rmse_values_with_assimilation[(sensor[0], gain)] for gain in gains]
+        plt.plot(gains, rmse_with_assimilation, marker='o', label=f'Sensor {sensor[0]}')
+
+    # Plot RMSE without assimilation
+    rmse_without_assimilation = [rmse_values_without_assimilation[sensor[0]] for sensor in sensors]
+    plt.plot(gains, rmse_without_assimilation, marker='o', label='Without Assimilation', linestyle='--')
+
+    plt.xlabel('Gain')
+    plt.ylabel('RMSE')
+    plt.title('RMSE with and without Assimilation')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+#print(model[1].tail())
 assimilated_data = assimilate_data(all_data, model, gains)
-rmse_values = evaluate_rmse(all_data, assimilated_data, gains) 
-print(rmse_values)
+rmse_without_assimilation = calculate_rmse_without_assimilation(all_data, model)
+rmse_values = evaluate_rmse(all_data, assimilated_data, gains)
+# for sensor_name, gain in rmse_values.keys():
+#     print(f"RMSE for sensor {sensor_name} with gain {gain}: {rmse_values[(sensor_name, gain)]}")
+
+for sensor_name, gain in rmse_values.keys():
+    rmse_with_assimilation = rmse_values[(sensor_name, gain)]
+    rmse_no_assimilation = rmse_without_assimilation[sensor_name]
+    print(f"For sensor {sensor_name} with gain {gain}, RMSE with assimilation: {rmse_with_assimilation}, RMSE without assimilation: {rmse_no_assimilation}")
+
+#plot_rmse_line(rmse_values, rmse_without_assimilation)
+
+def std_dev_rolling(data):
+    window_sizes = [11, 21, 51]
+    for sensor in data:
+        sensor_df = sensor[1]
+        print(f"df length: {len(sensor_df)}")
+        for window in window_sizes:
+            sensor_df[f'std_dev_{window}'] = sensor_df['dt_sound_level_dB'].rolling(window, center=True).std().fillna(0)
+        # for window in window_sizes:
+        #     half_window = window // 2
+        #     sensor_df[f'std_dev_{window}'] = sensor_df['dt_sound_level_dB'].rolling(window, center=True).std()
+        #     sensor_df[f'std_dev_{window}'][:half_window] = np.nan
+        #     sensor_df[f'std_dev_{window}'][-half_window:] = np.nan
+        # df = sensor[1]
+        # for window in window_sizes:
+        #     df[f'std_dev_{window}'] = df['dt_sound_level_dB'].rolling(window, center=True).std()
+    return data
+all_data.insert(0, model)
+std_dev_rolling_data = std_dev_rolling(assimilated_data[0.1])
+for  sensor in std_dev_rolling_data:
+    print(f"{sensor[0]} df length: {len(sensor[1])}")
+    print(sensor[1])
+
