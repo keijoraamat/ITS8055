@@ -139,3 +139,21 @@ for  sensor in std_dev_rolling_data:
     print(f"{sensor[0]} df length: {len(sensor[1])}")
     print(sensor[1])
 
+# Create a new figure for plotting
+fig, axes = plt.subplots(len(std_dev_rolling_data), 1, figsize=(25, 35))  # Adjust figsize for better visualization
+
+# Iterate through each sensor data and plot on separate subplots
+for i, (name, df) in enumerate(std_dev_rolling_data):
+    ax = axes[i]
+    # Plot sound level and all std_dev columns
+    ax.plot(df["Time"], df["dt_sound_level_dB"], label="Sound Level")
+    for col in df.columns[1:]:  # Skip the first column (Time)
+        ax.plot(df["Time"], df[col], label=col)
+    ax.set_title(f"Sensor: {name}")
+    ax.set_xlabel("Time")
+    ax.legend()  # Add legend for clarity
+
+# Adjust layout and display the plot
+fig.suptitle("Sound Level Data with Standard Deviations from Different Sensors")
+plt.tight_layout()
+plt.savefig("std_dev_plot.png")
