@@ -113,7 +113,7 @@ rmse_values = evaluate_rmse(all_data, assimilated_data, gains)
 for sensor_name, gain in rmse_values.keys():
     rmse_with_assimilation = rmse_values[(sensor_name, gain)]
     rmse_no_assimilation = rmse_without_assimilation[sensor_name]
-    print(f"For sensor {sensor_name} with gain {gain}, RMSE with assimilation: {rmse_with_assimilation}, RMSE without assimilation: {rmse_no_assimilation}")
+    print(f"RMSE for sensor: {sensor_name}, gain: {gain}, with assimilation: {rmse_with_assimilation:.2f}, without: {rmse_no_assimilation:.2f}")
 
 #plot_rmse_line(rmse_values, rmse_without_assimilation)
 
@@ -124,20 +124,16 @@ def std_dev_rolling(data):
         print(f"df length: {len(sensor_df)}")
         for window in window_sizes:
             sensor_df[f'std_dev_{window}'] = sensor_df['dt_sound_level_dB'].rolling(window, center=True).std().fillna(0)
-        # for window in window_sizes:
-        #     half_window = window // 2
-        #     sensor_df[f'std_dev_{window}'] = sensor_df['dt_sound_level_dB'].rolling(window, center=True).std()
-        #     sensor_df[f'std_dev_{window}'][:half_window] = np.nan
-        #     sensor_df[f'std_dev_{window}'][-half_window:] = np.nan
-        # df = sensor[1]
-        # for window in window_sizes:
-        #     df[f'std_dev_{window}'] = df['dt_sound_level_dB'].rolling(window, center=True).std()
+
     return data
 all_data.insert(0, model)
 std_dev_rolling_data = std_dev_rolling(assimilated_data[0.1])
-for  sensor in std_dev_rolling_data:
-    print(f"{sensor[0]} df length: {len(sensor[1])}")
-    print(sensor[1])
+
+for sensor in std_dev_rolling_data:
+    stds =["std_dev_11", "std_dev_21", "std_dev_51"]
+    stds_sums = sensor[1][stds].sum()
+    print(f"{sensor[0]} \n {stds_sums}")
+    #print(sensor[1])
 
 # Create a new figure for plotting
 fig, axes = plt.subplots(len(std_dev_rolling_data), 1, figsize=(25, 35))  # Adjust figsize for better visualization
@@ -151,7 +147,7 @@ for i, (name, df) in enumerate(std_dev_rolling_data):
         ax.plot(df["Time"], df[col], label=col)
     ax.set_title(f"Sensor: {name}")
     ax.set_xlabel("Time")
-    ax.legend()  # Add legend for clarity
+    ax.legend()
 
 # Adjust layout and display the plot
 fig.suptitle("Sound Level Data with Standard Deviations from Different Sensors")
