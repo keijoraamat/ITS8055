@@ -24,7 +24,7 @@ class Repository:
         """Set the interpolation method for the data."""
         self.interpolation_method = method
 
-    def get_interpolated_data(self, method: str) -> list[str, str]:
+    def get_interpolated_data(self, method: str) -> dict[str, list[pandas.DataFrame]]:
         """Returns all data interpolated using given method"""
         if method is None:
             print("No interpolation method set, exiting")
@@ -32,10 +32,11 @@ class Repository:
         if not os.path.exists(os.path.join(self.i_data_dir, method)):
             print(f"No data found for {method} interpolation method\nStarting interpolating data...")
             self.interpolate_all_data()
-        result = []
+        result = {}
         for region in os.listdir(os.path.join(self.i_data_dir, method)):
+            result[region] = []
             for filename in os.listdir(os.path.join(self.i_data_dir, method, region)):
-                result.append(self._get_file_content(filename, region=region, interpol_method=method, data='interpolated'))
+                result[region].append(self._get_file_content(filename, region=region, interpol_method=method, data='interpolated'))
         return result
 
     def get_all_filenames(self, region:str) -> list[str]:
