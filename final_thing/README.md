@@ -22,6 +22,7 @@ Repo().get_interpolated_data('linear')
 
 ## Task 3 - Data assimilation of time-series data
 
+How often the SPL level exceeds 65 dBA at the region 4 only(eight stations in total)? The data should be reported as a percentage of the day, evening and night periods (e.g. the SPL exceeded 65 dBA 23.6% day, 14.9% evening and 2.4% night).
 
 ## Task 4 Embedded hardware SPL recording
 

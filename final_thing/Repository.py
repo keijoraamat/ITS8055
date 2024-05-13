@@ -66,6 +66,7 @@ class Repository:
 
             # Reindex the dataframe with the complete date range
             data_frame_reindexed: pandas.DataFrame = data_frame_resampled.reindex(labels=complete_date_range)
+            data_frame_reindexed.index.name = 'Time'
 
             # Interpolate the missing values
             if interpol_method == 'linear':
@@ -92,7 +93,7 @@ class Repository:
 
     def _save_data(self, data: pandas.DataFrame, file_name: str, path: str) -> None:
         """Saves the data to a csv file"""
-        data.to_csv(path_or_buf=os.path.join(path, file_name), index=True, header=True)
+        data.to_csv(path_or_buf=os.path.join(path, file_name), index=False, header=True)
 
     def _interpolate_and_save(self, filename: str, region_name:str, interpol_method: str) -> None:
         """
