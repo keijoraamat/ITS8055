@@ -1,5 +1,4 @@
 """The starting point of the program"""
-import pandas as pd
 from Repository import Repository
 
 
