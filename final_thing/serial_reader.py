@@ -10,7 +10,7 @@ ser = serial.Serial(port=PORT, baudrate=BAUDRATE)
 
 # Open (or create) the CSV file for writing
 with open(file=OUT_FILENAME, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.writer(csvfile=file)
+    writer = csv.writer(file)
 
     # Read from the serial port
     while True:
